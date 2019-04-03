@@ -7,3 +7,5 @@ http.createServer(function(request, response) {
     response.write('We made it!');
     response.end();
 }).listen(port);
+
+console.log('yey');
