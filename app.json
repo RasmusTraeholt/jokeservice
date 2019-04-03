@@ -1,4 +1,13 @@
 {
-    "repository": "https://github.com/RasmusTraeholt/jokeservice"
+    "repository": "https://github.com/RasmusTraeholt/jokeservice",
+    "buildpacks": [
+      {
+        "url": "https://github.com/heroku/heroku-buildpack-nodejs"
+      },
+      {
+        "url": "heroku/nodejs"
+      }
+    ]
   }
+  
   
