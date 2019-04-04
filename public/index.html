@@ -5,9 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
-    <script src="script.js"></script>
+    <script src="https://cdn.jsdelivr.net/handlebarsjs/4.0.5/handlebars.min.js"></script>
+    <script src="script.js" defer></script>
 </head>
 <body>
-    <ol id="posts"></ol>
+    <div class="container">
+        <div id="postJoke">
+            <label>Setup:</label>
+            <input type="text" id="setup">
+            <label>Punchline:</label>
+            <input type="text" id="punchline">
+            <button id="btnPost">Create joke</button>
+        </div>
+        <div id="jokeContainer">
+            <ol id="jokes"></ol>
+        </div>
+    </div>
 </body>
 </html>

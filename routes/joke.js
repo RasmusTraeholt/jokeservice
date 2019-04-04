@@ -4,7 +4,7 @@ const router = express.Router();
 
 router
     .get('/', (req, res) => {
-        controller.getPosts()
+        controller.getJokes()
             .then(val => res.json(val))
             .catch(err => {
                 console.error("Error: " + err);
@@ -14,8 +14,8 @@ router
     })
     .post('/', (req, res) => {
         const {setup, punchline} = req.body;
-        controller.createPost(setup, punchline)
-            .then(() => res.json({message: 'Post saved!'}))
+        controller.createJoke(setup, punchline)
+            .then(() => res.json({message: 'Joke saved!'}))
             .catch(err => {
                 console.error("Error: " + err);
                 if (err.stack) console.error(err.stack);

@@ -1,22 +1,27 @@
 "use strict";
 
-const Post = require('../models/Post');
+const Joke = require('../models/Joke');
 
-// Returns a promise that resolves when the post is created
-exports.createPost = function (setup, punchline) {
-    const post = new Post({
+// Returns a promise that resolves when the joke is created
+exports.createJoke = function (setup, punchline) {
+    const joke = new Joke({
         setup,
         punchline
     });
-    return post.save();
+    return joke.save();
 };
 
-// Returns a promise that resolves when a post is found with the specified id
-exports.getPost = function (id) {
-    return Post.findOne({_id: id}).exec();
+// Returns a promise that resolves when a joke is found with the specified id
+exports.getJoke = function (id) {
+    return Joke.findOne({_id: id}).exec();
 };
 
-// Returns a promise that resolves with an array of all posts
-exports.getPosts = function () {
-    return Post.find().exec();
+// Returns a promise that resolves with an array of all jokes
+exports.getJokes = function () {
+    return Joke.find().exec();
 };
+
+// Returns a promise that resolves when a joke is found and deleted with specified id
+exports.deleteJoke = function () {
+    return Joke.findOneAndDelete({_id : id}).exec();
+}

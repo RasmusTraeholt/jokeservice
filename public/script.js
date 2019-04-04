@@ -1,36 +1,62 @@
-const postContainer = document.getElementById('posts');
+const jokeContainer = document.getElementById('jokes');
+const btnPost = document.getElementById('btnPost');
 
 //setOnClicks();
 update();
 
 function update() {
-    postContainer.innerHTML = '';
+    jokeContainer.innerHTML = '';
     for (let input of document.querySelectorAll('input')) input.value = '';
 
-    getPosts();
+    getJokes();
 }
 
-async function getPosts() {
-    const [template, postResponse] = await Promise.all([fetch('/post.hbs'), fetch('/post')]);
-    const [templateText, posts] = await Promise.all([template.text(), postResponse.json()]);
+async function getJokes() {
+    const [template, jokeResponse] = await Promise.all([fetch('/joke.hbs'), fetch('/joke')]);
+    const [templateText, jokes] = await Promise.all([template.text(), jokeResponse.json()]);
     const compiledTemplate = Handlebars.compile(templateText);
-    let postsHTML = '';
+    let jokesHTML = '';
     let optionsHTML = '';
-    posts.forEach(post => {
-        postsHTML += compiledTemplate({
-            setup: post.setup,
-            punchline: post.punchline
+    jokes.forEach(joke => {
+        jokesHTML += compiledTemplate({
+            setup: joke.setup,
+            punchline: joke.punchline
         });
-        optionsHTML += '<option data="' + post._id + '">' + post._id + '</option>';
+        optionsHTML += '<option data="' + joke._id + '">' + joke._id + '</option>';
     });
-    postContainer.innerHTML = postsHTML;
+    jokeContainer.innerHTML = jokesHTML;
     //document.querySelector('#createPicker').innerHTML = optionsHTML;
     //$('.selectpicker').selectpicker('refresh');
 }
 
+btnPost.onclick = () => {
+    let setup = document.getElementById('setup').value;
+    let punchline = document.getElementById('punchline').value
+    if (setup.length > 0 && punchline.length > 0) {
+        const msg = {
+            setup: setup,
+            punchline: punchline,
+        };
+        fetch('/joke', {
+            method: "POST",
+            body: JSON.stringify(msg),
+            headers: {'Content-Type': 'application/json'}
+        })
+            .then(response => {
+                if (response.status >= 400)
+                    throw new Error(response.status);
+                else
+                    update();
+                return response.json();
+            })
+            .then(resultat => console.log(`Resultat: %o`, resultat))
+            .catch(fejl => console.log('Fejl: ' + fejl));
+    }
+}
+
 /*
 function setOnClicks() {
-    document.querySelector('#submitPost').onclick = () => {
+    document.querySelector('#submitJoke').onclick = () => {
         const msg = {
             name: document.querySelector('#compName').value,
             hours: document.querySelector('#compHours').value,
