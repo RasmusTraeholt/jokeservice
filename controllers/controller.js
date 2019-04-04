@@ -1,6 +1,7 @@
 "use strict";
 
-const Joke = require('../models/Joke');
+const Joke = require('../models/joke');
+const Service = require('../models/service')
 
 // Returns a promise that resolves when the joke is created
 exports.createJoke = function (setup, punchline) {
@@ -22,6 +23,27 @@ exports.getJokes = function () {
 };
 
 // Returns a promise that resolves when a joke is found and deleted with specified id
-exports.deleteJoke = function () {
+exports.deleteJoke = function (id) {
     return Joke.findOneAndDelete({_id : id}).exec();
-}
+};
+
+exports.getServices = function () {
+    return Service.find().exec();
+};
+
+exports.getService = function (id) {
+    return Service.findOne({_id : id}).exec();
+};
+
+exports.createService = function (name, address, secret) {
+    const service = new Service({
+        name,
+        address,
+        secret
+    });
+    return service.save();
+};
+
+exports.deleteService = function (address, secret) {
+    return Service.findOneAndDelete({address: address, secret: secret}).exec();
+};

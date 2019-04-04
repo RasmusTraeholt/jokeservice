@@ -1,18 +1,21 @@
 const jokeContainer = document.getElementById('jokes');
 const btnPost = document.getElementById('btnPost');
+const serviceContainer = document.getElementById('services');
 
 //setOnClicks();
 update();
 
 function update() {
     jokeContainer.innerHTML = '';
+    serviceContainer.innerHTML = '';
     for (let input of document.querySelectorAll('input')) input.value = '';
 
     getJokes();
 }
 
 async function getJokes() {
-    const [template, jokeResponse] = await Promise.all([fetch('/joke.hbs'), fetch('/joke')]);
+    const [template, jokeResponse] = await Promise.all([fetch('/joke.hbs'), fetch('/api/jokes')]);
+    console.log(jokeResponse);
     const [templateText, jokes] = await Promise.all([template.text(), jokeResponse.json()]);
     const compiledTemplate = Handlebars.compile(templateText);
     let jokesHTML = '';
@@ -37,7 +40,7 @@ btnPost.onclick = () => {
             setup: setup,
             punchline: punchline,
         };
-        fetch('/joke', {
+        fetch('/api/jokes', {
             method: "POST",
             body: JSON.stringify(msg),
             headers: {'Content-Type': 'application/json'}
@@ -52,6 +55,22 @@ btnPost.onclick = () => {
             .then(resultat => console.log(`Resultat: %o`, resultat))
             .catch(fejl => console.log('Fejl: ' + fejl));
     }
+}
+
+async function getServices() {
+    const [template, response] = await Promise.all([fetch('/service.hbs'), fetch('/api/othersites')]);
+    const [templateText, services] = await Promise.all([template.text(), response.json()]);
+    const compiledTemplate = Handlebars.compile(templateText);
+    let HTML = '';
+    services.forEach(service => {
+        HTML += compiledTemplate({
+            name: service.name,
+            address: service.address,
+            secret: service.secret
+        });
+       // optionsHTML += '<option data="' + joke._id + '">' + joke._id + '</option>';
+    });
+    serviceContainer.innerHTML = HTML;
 }
 
 /*

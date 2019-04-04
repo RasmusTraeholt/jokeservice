@@ -7,7 +7,7 @@ const joke = new Schema({
 });
 
 joke.methods.toString = function() {
-    return this.setup + ", hours: " + this.punchline;
+    return "setup: " + this.setup + ", punchline: " + this.punchline;
 };
 
 module.exports = mongoose.model('Joke', joke);
