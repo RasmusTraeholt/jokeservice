@@ -14,9 +14,8 @@ function update() {
 }
 
 async function getJokes() {
-    const [template, jokeResponse] = await Promise.all([fetch('/joke.hbs'), fetch('/api/jokes')]);
-    console.log(jokeResponse);
-    const [templateText, jokes] = await Promise.all([template.text(), jokeResponse.json()]);
+    const [template, response] = await Promise.all([fetch('/joke.hbs'), fetch('/api/jokes')]);
+    const [templateText, jokes] = await Promise.all([template.text(), response.json()]);
     const compiledTemplate = Handlebars.compile(templateText);
     let jokesHTML = '';
     let optionsHTML = '';

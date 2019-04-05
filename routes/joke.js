@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 
 router
-    .get('/api/jokes', (req, res) => {
+    .get('/jokes', (req, res) => {
         // Get own jokes
         controller.getJokes()
             .then(val => res.json(val))
@@ -13,7 +13,7 @@ router
                 res.status(500).send(err);
             });
     })
-    .post('/api/jokes', (req, res) => {
+    .post('/jokes', (req, res) => {
         // Create new joke to own db
         const {setup, punchline} = req.body;
         controller.createJoke(setup, punchline)
@@ -24,7 +24,7 @@ router
                 res.status(500).send(err);
             });
     })
-    .get('/api/jokes/:id', (req, res) => {
+    .get('/jokes/:id', (req, res) => {
         // Get specific own joke
         controller.getJoke(req.params.id)
         .then(val => res.json(val))
@@ -34,16 +34,16 @@ router
             res.status(500).send(err);
         });
     })
-    .post('/api/jokes/:id', (req, res) => {
+    .post('/jokes/:id', (req, res) => {
         // Edit own joke
     })
-    .get('/api/othersite', (req, res) => {
+    .get('/othersite', (req, res) => {
         // Get other services
     })
-    .get('/api/otherjokes/:site', (req, res) => {
+    .get('/otherjokes/:site', (req, res) => {
         // Get jokes from specific service
     })
-    .delete('/api/jokes/:id', (req, res) => {
+    .delete('/jokes/:id', (req, res) => {
         // Delete own joke
     });
 

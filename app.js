@@ -17,9 +17,7 @@ mongoose.connect(config.mongodb, {useNewUrlParser: true});
 
 // ROUTES FOR THE APP
 const jokeRouter = require('./routes/joke');
-app.use('/joke', jokeRouter);
-const serviceRouter = require('./routes/service');
-app.use('/service', serviceRouter);
+app.use('/api', jokeRouter);
 
 // START THE SERVER
 const port = process.env.PORT || config.localPort;
