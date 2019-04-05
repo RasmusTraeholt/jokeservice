@@ -1,7 +1,8 @@
 "use strict";
 
 const Joke = require('../models/joke');
-const Service = require('../models/service')
+const RegistryURL = require('../config').jokeRegistry;
+const fetch = require('node-fetch');
 
 // Returns a promise that resolves when the joke is created
 exports.createJoke = function (setup, punchline) {
@@ -27,8 +28,10 @@ exports.deleteJoke = function (id) {
     return Joke.findOneAndDelete({_id : id}).exec();
 };
 
-exports.getServices = function () {
-    return Service.find().exec();
+exports.getOthersites = async function () {
+   const response = await fetch('https://krdo-joke-registry.herokuapp.com/api/services');
+   const result = await response.json();
+   return result;
 };
 
 exports.getService = function (id) {

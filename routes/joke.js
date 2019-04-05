@@ -1,6 +1,7 @@
 const controller = require("../controllers/controller");
 const express = require('express');
 const router = express.Router();
+const fetch = require('node-fetch');
 
 router
     .get('/jokes', (req, res) => {
@@ -37,8 +38,14 @@ router
     .post('/jokes/:id', (req, res) => {
         // Edit own joke
     })
-    .get('/othersite', (req, res) => {
-        // Get other services
+    .get('/othersites', (req, res) => {
+        controller.getOthersites()
+        .then(val => res.json(val))
+        .catch(err => {
+            console.error("Error: " + err);
+            if (err.stack) console.error(err.stack);
+            res.status(500).send(err);
+        });
     })
     .get('/otherjokes/:site', (req, res) => {
         // Get jokes from specific service

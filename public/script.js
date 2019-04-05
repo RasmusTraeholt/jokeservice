@@ -1,9 +1,11 @@
+//const controller = require('../controllers/controller');
 const jokeContainer = document.getElementById('jokes');
 const btnPost = document.getElementById('btnPost');
 const serviceContainer = document.getElementById('services');
 
 //setOnClicks();
 update();
+//createService();
 
 function update() {
     jokeContainer.innerHTML = '';
@@ -11,6 +13,7 @@ function update() {
     for (let input of document.querySelectorAll('input')) input.value = '';
 
     getJokes();
+    getServices();
 }
 
 async function getJokes() {
@@ -59,6 +62,7 @@ btnPost.onclick = () => {
 async function getServices() {
     const [template, response] = await Promise.all([fetch('/service.hbs'), fetch('/api/othersites')]);
     const [templateText, services] = await Promise.all([template.text(), response.json()]);
+
     const compiledTemplate = Handlebars.compile(templateText);
     let HTML = '';
     services.forEach(service => {
@@ -70,6 +74,20 @@ async function getServices() {
        // optionsHTML += '<option data="' + joke._id + '">' + joke._id + '</option>';
     });
     serviceContainer.innerHTML = HTML;
+}
+
+async function createService() {
+    const data = {name: 'Dad jokes', address: 'https://jokeservice69.herokuapp.com/', secret: 'daddy'};
+    try {
+        const service = await fetch('https://krdo-joke-registry.herokuapp.com/api/services', {
+            method: "POST",
+            body: JSON.stringify(data),
+            headers: { 'Content-Type': 'application/json' }
+           // Origin: 'https://jokeservice69.herokuapp.com/'
+        });
+    } catch (err) {
+        console.log(err.status);
+    }
 }
 
 /*
