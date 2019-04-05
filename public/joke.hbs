@@ -1,9 +1,9 @@
-<li>
+<li id="joke-{{id}}">
     <label>Setup: </label>{{setup}}<br/>
     <label>Punchline: </label>{{punchline}}<br/>
-    <p>
+    <button type="submit" id="{{id}}" onclick="deleteJoke(this.id)">Delete</button>
+
     {{#each joke}}
-        {{setup}} {{punchline}}<br/>
+        {{setup}} {{punchline}} {{id}}<br/>
     {{/each}}
-    </p>
 </li>

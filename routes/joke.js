@@ -51,7 +51,14 @@ router
         // Get jokes from specific service
     })
     .delete('/jokes/:id', (req, res) => {
-        // Delete own joke
+        controller.deleteJoke(req.params.id)
+        .then(() => res.json({message: 'Joke deleted!'}))
+        //.then(val => res.json(val))
+        .catch(err => {
+            console.error("Error: " + err);
+            if (err.stack) console.error(err.stack);
+            res.status(500).send(err);
+        });
     });
 
 module.exports = router;
