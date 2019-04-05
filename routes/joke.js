@@ -32,13 +32,23 @@ router
         .catch(err => {
             console.log("Error: " + err);
             if(err.stack) console.error(err.stack);
+            //res.sendStatus(404); Not found!
             res.status(500).send(err);
         });
     })
-    .post('/jokes/:id', (req, res) => {
+    .put('/jokes/:id', (req, res) => {
         // Edit own joke
+        const {setup, punchline} = req.body;
+        controller.editJoke(req.params.id, setup, punchline)
+        .then(result => res.json({message: 'Joke edited!', joke: result}))
+            .catch(err => {
+                console.error("Error: " + err);
+                if (err.stack) console.error(err.stack);
+                res.status(500).send(err);
+            });
     })
     .get('/othersites', (req, res) => {
+        // Get other jokeservices
         controller.getOthersites()
         .then(result => res.json(result))
         .catch(err => {

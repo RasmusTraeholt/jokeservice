@@ -28,6 +28,13 @@ exports.deleteJoke = function (id) {
     return Joke.findOneAndDelete({_id : id}).exec();
 };
 
+exports.editJoke = function(id, setup, punchline) {
+    return Joke.findOneAndUpdate(
+        {_id : id}, 
+        {setup : setup, punchline : punchline}, 
+        {new : true}).exec();
+};
+
 exports.getOthersites = async function () {
    const response = await fetch('https://krdo-joke-registry.herokuapp.com/api/services');
    const result = await response.json();

@@ -1,7 +1,8 @@
-<li id="joke-{{id}}">
-    <label>Setup: </label>{{setup}}<br/>
-    <label>Punchline: </label>{{punchline}}<br/>
-    <button type="submit" id="{{id}}" onclick="deleteJoke(this.id)">Delete</button>
+<li id="{{id}}">
+    <label>Setup: </label><p contenteditable="true" id="setup-{{id}}">{{setup}}</p>
+    <label>Punchline: </label><p contenteditable="true" id="punchline-{{id}}">{{punchline}}</p>
+    <button type="submit" onclick="deleteJoke(this.parentNode.id)">Delete</button>
+    <button type="submit" onclick="editJoke(this.parentNode.id)">Edit</button>
 
     {{#each joke}}
         {{setup}} {{punchline}} {{id}}<br/>

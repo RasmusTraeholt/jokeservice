@@ -67,6 +67,30 @@ async function deleteJoke(id) {
    
 }
 
+async function editJoke(id) {
+    const setup = document.getElementById('setup-' + id).innerText;
+    const punchline = document.getElementById('punchline-' + id).innerText;
+    if (setup.length > 0 && punchline.length > 0) {
+        const msg = {
+            setup: setup,
+            punchline: punchline
+        };
+        try {
+            const response = await fetch('/api/jokes/' + id, {
+                method: 'PUT',
+                body: JSON.stringify(msg),
+                headers: {'Content-Type': 'application/json'}
+            })
+            const json = await response.json();
+            console.log(`Resultat: %o`, json);
+            updateJokes();
+        } catch (err) {
+            alert('Noget gik galt: ', err);
+            console.log(err);
+        }
+    }
+}
+
 btnPost.onclick = async () => {
     let setup = document.getElementById('setup').value;
     let punchline = document.getElementById('punchline').value
