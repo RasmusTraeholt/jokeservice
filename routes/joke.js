@@ -18,7 +18,7 @@ router
         // Create new joke to own db
         const {setup, punchline} = req.body;
         controller.createJoke(setup, punchline)
-            .then(() => res.json({message: 'Joke saved!'}))
+            .then(result => res.json({message: 'Joke saved!', joke: result}))
             .catch(err => {
                 console.error("Error: " + err);
                 if (err.stack) console.error(err.stack);
@@ -40,7 +40,7 @@ router
     })
     .get('/othersites', (req, res) => {
         controller.getOthersites()
-        .then(val => res.json(val))
+        .then(result => res.json(result))
         .catch(err => {
             console.error("Error: " + err);
             if (err.stack) console.error(err.stack);
@@ -52,8 +52,7 @@ router
     })
     .delete('/jokes/:id', (req, res) => {
         controller.deleteJoke(req.params.id)
-        .then(() => res.json({message: 'Joke deleted!'}))
-        //.then(val => res.json(val))
+        .then(result => res.json({message: 'Joke deleted!', joke: result}))
         .catch(err => {
             console.error("Error: " + err);
             if (err.stack) console.error(err.stack);
