@@ -114,6 +114,8 @@ btnPost.onclick = async () => {
     }
 }
 
+
+//kan ikke finde hvor den bliver brugt
 async function createService() {
     const data = {name: 'Dad jokes', address: 'https://jokeservice69.herokuapp.com/', secret: 'daddy'};
     try {
