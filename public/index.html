@@ -16,7 +16,7 @@
         <div class="row">
             <div class="col">
                 <label>Vælg side:</label>
-                <select id="services">
+                <select id="services" onchange="updateJokes()">Select a site
                     <!--Othersites-->
                 </select>
             </div>
@@ -29,9 +29,9 @@
             </div>
             <div class="col">
                 <label>Setup:</label>
-                <input type="text" id="setup">
+                <input type="text" id="setup"><br/>
                 <label>Punchline:</label>
-                <input type="text" id="punchline">
+                <input type="text" id="punchline"><br/>
                 <button id="btnPost">Create joke</button>
             </div>
         </div>

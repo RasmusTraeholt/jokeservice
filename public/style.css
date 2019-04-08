@@ -12,3 +12,7 @@
     flex: 1 1 0;
     padding: 10px;
 }
+
+ol li {
+    padding-bottom: 20px;
+}

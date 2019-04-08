@@ -59,6 +59,13 @@ router
     })
     .get('/otherjokes/:site', (req, res) => {
         // Get jokes from specific service
+        controller.getOtherSiteJokes(req.params.site)
+        .then(result => res.json(result))
+        .catch(err => {
+            console.error("Error: " + err);
+            if (err.stack) console.error(err.stack);
+            res.status(500).send(err);
+        });
     })
     .delete('/jokes/:id', (req, res) => {
         controller.deleteJoke(req.params.id)

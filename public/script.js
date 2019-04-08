@@ -6,22 +6,60 @@ update();
 
 //createService();
 
-function update() {
+async function update() {
     jokeContainer.innerHTML = '';
     serviceContainer.innerHTML = '';
     for (let input of document.querySelectorAll('input')) input.value = '';
-
-    getJokes();
     getServices();
 }
 
 function updateJokes() {
     jokeContainer.innerHTML = '';
     for (let input of document.querySelectorAll('input')) input.value = '';
-    getJokes();
+    if (serviceContainer.value != '0') {
+        getJokes(serviceContainer.value);
+    }
 }
 
-async function getJokes() {
+async function getJokes(id) {
+    jokeContainer.innerHTML = 'Loading...';
+    let template;
+    let response;
+ 
+    if (!id || serviceContainer.options[serviceContainer.selectedIndex].id === 'https://jokeservice69.herokuapp.com/') {
+        response = await fetch('/api/jokes');
+        template = await fetch('/joke.hbs');
+    } else {
+        response = await fetch('/api/otherjokes/' + id);
+        template = await fetch('/otherJoke.hbs');
+    }
+
+    console.log(response);
+
+    try {
+        const templateText = await template.text();
+        const jokes = await response.json();
+
+        console.log(jokes);
+
+        const compiledTemplate = Handlebars.compile(templateText);
+
+        let jokesHTML = '';
+        jokes.forEach(joke => {
+            jokesHTML += compiledTemplate({
+                id: joke._id,
+                setup: joke.setup,
+                punchline: joke.punchline,
+            });
+        });
+
+        jokeContainer.innerHTML = jokesHTML;
+    } catch (err) {
+        console.log(err);
+        jokeContainer.innerHTML = 'Failed to fetch jokes from service...';
+    }
+
+    /*
     const [template, response] = await Promise.all([fetch('/joke.hbs'), fetch('/api/jokes')]);
     const [templateText, jokes] = await Promise.all([template.text(), response.json()]);
     const compiledTemplate = Handlebars.compile(templateText);
@@ -34,6 +72,7 @@ async function getJokes() {
         });
     });
     jokeContainer.innerHTML = jokesHTML;
+    */
 }
 
 async function getServices() {
@@ -41,9 +80,10 @@ async function getServices() {
     const [templateText, services] = await Promise.all([template.text(), response.json()]);
 
     const compiledTemplate = Handlebars.compile(templateText);
-    let HTML = '';
+    let HTML = '<option value="0" disabled selected>Select a site</option>';
     services.forEach(service => {
         HTML += compiledTemplate({
+            id: service._id,
             name: service.name,
             address: service.address,
             secret: service.secret
@@ -53,6 +93,8 @@ async function getServices() {
 }
 
 async function deleteJoke(id) {
+    //let url = serviceContainer.options[serviceContainer.selectedIndex].id;
+
     try {
         const response = await fetch('/api/jokes/' + id, {
             method: 'DELETE',

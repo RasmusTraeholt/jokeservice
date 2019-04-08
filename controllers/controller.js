@@ -36,10 +36,25 @@ exports.editJoke = function(id, setup, punchline) {
 };
 
 exports.getOthersites = async function () {
-   const response = await fetch('https://krdo-joke-registry.herokuapp.com/api/services');
-   const result = await response.json();
-   return result;
+   const response = await fetch(RegistryURL + '/api/services');
+   const json = await response.json();
+   return json;
 };
+
+exports.getOtherSiteJokes = async function (id) {
+    const allSites = await fetch(RegistryURL + '/api/services');
+    const allSitesJSON = await allSites.json();
+    const result = allSitesJSON.find(site => site._id == id);
+    let url = result.address;
+    const regex = /\/$/;
+    if (!regex.test(url)) {
+        url += '/';
+    }
+    console.log(result);
+    const response = await fetch(url + 'api/jokes');
+    const json = await response.json();
+    return json;
+}
 
 exports.getService = function (id) {
     return Service.findOne({_id : id}).exec();
