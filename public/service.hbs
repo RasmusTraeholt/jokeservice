@@ -1,10 +1,5 @@
-<li>
-    <label>Name: </label>{{name}}<br/>
-    <label>Address: </label>{{address}}<br/>
+<option value="{{address}}">{{name}}</option>
 
-    <p>
-    {{#each service}}
-        {{name}} {{address}}<br/>
-    {{/each}}
-    </p>
-</li>
+{{#each service}}
+    {{name}} {{address}}
+{{/each}}
