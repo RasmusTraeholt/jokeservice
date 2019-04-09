@@ -42,10 +42,13 @@ exports.getOthersites = async function () {
 };
 
 exports.getOtherSiteJokes = async function (id) {
-    const allSites = await fetch(RegistryURL + '/api/services');
-    const allSitesJSON = await allSites.json();
-    const result = allSitesJSON.find(site => site._id == id);
-    let url = result.address;
+    //const allSites = await fetch(RegistryURL + '/api/services');
+    //const allSitesJSON = await allSites.json();
+    //const result = allSitesJSON.find(site => site._id == id);
+
+    const site = findService(id);
+    let url = site.address;
+
     const regex = /\/$/;
     if (!regex.test(url)) {
         url += '/';
@@ -56,19 +59,8 @@ exports.getOtherSiteJokes = async function (id) {
     return json;
 }
 
-exports.getService = function (id) {
-    return Service.findOne({_id : id}).exec();
-};
-
-exports.createService = function (name, address, secret) {
-    const service = new Service({
-        name,
-        address,
-        secret
-    });
-    return service.save();
-};
-
-exports.deleteService = function (address, secret) {
-    return Service.findOneAndDelete({address: address, secret: secret}).exec();
+async function findService (id) {
+    const response = await fetch(RegistryURL + '/api/services');
+    const json = await response.json();
+    return json.find(site => site._id == id);
 };

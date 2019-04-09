@@ -1,6 +1,7 @@
 const jokeContainer = document.getElementById('jokes');
 const btnPost = document.getElementById('btnPost');
 const serviceContainer = document.getElementById('services');
+const newJokeContainer = document.getElementById('newJoke');
 
 update();
 
@@ -125,6 +126,7 @@ async function editJoke(id) {
             })
             const json = await response.json();
             console.log(`Resultat: %o`, json);
+            alert('Your joke has been saved');
             updateJokes();
         } catch (err) {
             alert('Noget gik galt: ', err);
@@ -149,6 +151,7 @@ btnPost.onclick = async () => {
             })
             const json = await response.json();
             console.log(`Resultat: %o`, json);
+            alert('Your new joke has been saved');
             updateJokes();
         } catch (err) {
             console.log(err);
