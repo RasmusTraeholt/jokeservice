@@ -42,12 +42,12 @@ exports.getOthersites = async function () {
 };
 
 exports.getOtherSiteJokes = async function (id) {
-    //const allSites = await fetch(RegistryURL + '/api/services');
-    //const allSitesJSON = await allSites.json();
-    //const result = allSitesJSON.find(site => site._id == id);
+    const allSites = await fetch(RegistryURL + '/api/services');
+    const allSitesJSON = await allSites.json();
+    const result = allSitesJSON.find(site => site._id == id);
 
-    const site = findService(id);
-    let url = site.address;
+    //const site = findService(id);
+    let url = result.address;
 
     const regex = /\/$/;
     if (!regex.test(url)) {
