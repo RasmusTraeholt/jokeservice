@@ -53,27 +53,11 @@ async function getJokes(id) {
                 punchline: joke.punchline,
             });
         });
-
         jokeContainer.innerHTML = jokesHTML;
     } catch (err) {
         console.log(err);
-        jokeContainer.innerHTML = 'Failed to fetch jokes from service...';
+        jokeContainer.innerHTML = 'Failed to fetch jokes from service';
     }
-
-    /*
-    const [template, response] = await Promise.all([fetch('/joke.hbs'), fetch('/api/jokes')]);
-    const [templateText, jokes] = await Promise.all([template.text(), response.json()]);
-    const compiledTemplate = Handlebars.compile(templateText);
-    let jokesHTML = '';
-    jokes.forEach(joke => {
-        jokesHTML += compiledTemplate({
-            id: joke._id,
-            setup: joke.setup,
-            punchline: joke.punchline,
-        });
-    });
-    jokeContainer.innerHTML = jokesHTML;
-    */
 }
 
 async function getServices() {
