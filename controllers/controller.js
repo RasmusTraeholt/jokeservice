@@ -15,7 +15,7 @@ exports.createJoke = function (setup, punchline) {
 
 // Returns a promise that resolves when a joke is found with the specified id
 exports.getJoke = function (id) {
-    return Joke.findOne({_id: id}).exec();
+    return Joke.findOne({ _id: id }).exec();
 };
 
 // Returns a promise that resolves with an array of all jokes
@@ -25,42 +25,84 @@ exports.getJokes = function () {
 
 // Returns a promise that resolves when a joke is found and deleted with specified id
 exports.deleteJoke = function (id) {
-    return Joke.findOneAndDelete({_id : id}).exec();
+    return Joke.findOneAndDelete({ _id: id }).exec();
 };
 
-exports.editJoke = function(id, setup, punchline) {
+exports.editJoke = function (id, setup, punchline) {
     return Joke.findOneAndUpdate(
-        {_id : id}, 
-        {setup : setup, punchline : punchline}, 
-        {new : true}).exec();
+        { _id: id },
+        { setup: setup, punchline: punchline },
+        { new: true }).exec();
 };
+
+exports.editOtherSiteJoke = async function(address, id, setup, punchline) {
+    const data = {setup: setup, punchline: punchline};
+    let url = address;
+    const regex = /\/$/;
+    if (!regex.test(url)) {
+        url += '/';
+    }
+    try {
+        const response = await fetch(url + 'api/jokes/' + id, {
+            method: "PUT",
+            body: JSON.stringify(data),
+            headers: { 'Content-Type': 'application/json' }
+        })
+        return response;
+    } catch (err) {
+        console.log(err);
+    }
+}
 
 exports.getOthersites = async function () {
-   const response = await fetch(RegistryURL + '/api/services');
-   const json = await response.json();
-   return json;
+    const response = await fetch(RegistryURL + '/api/services');
+    const json = await response.json();
+    return json;
 };
 
 exports.getOtherSiteJokes = async function (id) {
-    const allSites = await fetch(RegistryURL + '/api/services');
-    const allSitesJSON = await allSites.json();
-    const result = allSitesJSON.find(site => site._id == id);
-
-    //const site = findService(id);
-    let url = result.address;
+    const site = await exports.findService(id);
+    let url = site.address;
 
     const regex = /\/$/;
     if (!regex.test(url)) {
         url += '/';
     }
-    console.log(result);
     const response = await fetch(url + 'api/jokes');
     const json = await response.json();
     return json;
+};
+
+exports.deleteOtherSiteJoke = async function(url, id) {
+    const regex = /\/$/;
+    if (!regex.test(url)) {
+        url += '/';
+    }
+    try {
+        const response = await fetch(url + 'api/jokes/' + id, {
+            method: "DELETE",
+            headers: { 'Content-Type': 'application/json' }
+        })
+        return response;
+    } catch (err) {
+        console.log(err);
+    }
 }
 
-async function findService (id) {
+exports.findService = async function(id) {
     const response = await fetch(RegistryURL + '/api/services');
     const json = await response.json();
-    return json.find(site => site._id == id);
+    const site = json.find(site => site._id == id);
+    return site;
+};
+
+exports.deleteService = async function (address, secret) {
+    const data = { address: address, secret: secret };
+    const response = await fetch('https://krdo-joke-registry.herokuapp.com/api/services', {
+        method: "DELETE",
+        body: JSON.stringify(data),
+        headers: { 'Content-Type': 'application/json' }
+    })
+    const json = await response.json();
+    return json;
 };

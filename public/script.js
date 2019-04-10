@@ -2,6 +2,8 @@ const jokeContainer = document.getElementById('jokes');
 const btnPost = document.getElementById('btnPost');
 const serviceContainer = document.getElementById('services');
 const newJokeContainer = document.getElementById('newJoke');
+const btnDeleteService = document.getElementById('btnDeleteService');
+const btnCreateService = document.getElementById('btnCreateService');
 const maxJokes = 50;
 
 update();
@@ -33,7 +35,7 @@ async function getJokes(id) {
         template = await fetch('/joke.hbs');
     } else {
         response = await fetch('/api/otherjokes/' + id);
-        template = await fetch('/otherJoke.hbs');
+        template = await fetch('/joke.hbs');
     }
 
     console.log(response);
@@ -60,7 +62,7 @@ async function getJokes(id) {
         jokeContainer.innerHTML = jokesHTML;
     } catch (err) {
         console.log(err);
-        jokeContainer.innerHTML = 'Failed to fetch jokes from service';
+        jokeContainer.innerHTML = 'Failed to fetch jokes from: <a href="' + serviceContainer.options[serviceContainer.selectedIndex].id + '">' + serviceContainer.options[serviceContainer.selectedIndex].id +'</a>';
     }
 }
 
@@ -82,11 +84,12 @@ async function getServices() {
 }
 
 async function deleteJoke(id) {
-    //let url = serviceContainer.options[serviceContainer.selectedIndex].id;
-
+    let url = serviceContainer.options[serviceContainer.selectedIndex].id;
+    const data = {address: url, id: id};
     try {
-        const response = await fetch('/api/jokes/' + id, {
+        const response = await fetch('/api/othersite/jokes/' + id, {
             method: 'DELETE',
+            body: JSON.stringify({address: url}),
             headers: {'Content-Type': 'application/json'}
         })
         const json = await response.json();
@@ -95,19 +98,60 @@ async function deleteJoke(id) {
     } catch (err) {
         console.log(err);
     }
-   
 }
 
 async function editJoke(id) {
+    const url = serviceContainer.options[serviceContainer.selectedIndex].id;
     const setup = document.getElementById('setup-' + id).innerText;
     const punchline = document.getElementById('punchline-' + id).innerText;
     if (setup.length > 0 && punchline.length > 0) {
         const msg = {
+            url: url,
             setup: setup,
             punchline: punchline
         };
+        if (url === 'https://jokeservice69.herokuapp.com/') {
+            try {
+                const response = await fetch('/api/jokes/' + id, {
+                    method: 'PUT',
+                    body: JSON.stringify(msg),
+                    headers: {'Content-Type': 'application/json'}
+                })
+                const json = await response.json();
+                console.log(`Resultat: %o`, json);
+                alert('Your joke has been saved');
+                updateJokes();
+            } catch (err) {
+                alert('Noget gik galt: ', err);
+                console.log(err);
+            }
+        } else {
+            try {
+                const response = await fetch('/api/othersite/jokes/' + id, {
+                    method: 'PUT',
+                    body: JSON.stringify(msg),
+                    headers: {'Content-Type': 'application/json'}
+                })
+                const json = await response.json();
+                console.log(`Resultat: %o`, json);
+                alert('Your joke has been saved');
+                updateJokes();
+            } catch (err) {
+                alert('Noget gik galt: ', err);
+                console.log(err);
+            }
+        }
+    }
+}
+
+async function editOtherJoke(id) {
+    const url = serviceContainer.options[serviceContainer.selectedIndex].id;
+    const setup = document.getElementById('setup-' + id).innerText;
+    const punchline = document.getElementById('punchline-' + id).innerText;
+    if (setup.length > 0 && punchline.length > 0) {
+        const msg = {url: url, setup: setup, punchline: punchline};
         try {
-            const response = await fetch('/api/jokes/' + id, {
+            const response = await fetch('/api/othersite/jokes/' + id, {
                 method: 'PUT',
                 body: JSON.stringify(msg),
                 headers: {'Content-Type': 'application/json'}
@@ -147,16 +191,32 @@ btnPost.onclick = async () => {
     }
 }
 
-async function createService() {
+btnDeleteService.onclick = async () => {
+    const data = {address: 'https://jokeservice69.herokuapp.com/', secret: 'daddy'};
+    try {
+        const service = await fetch('/api/services', {
+            method: "DELETE",
+            body: JSON.stringify(data),
+            headers: { 'Content-Type': 'application/json' }
+        })
+
+        const json = await service.json();
+        console.log(`Resultat: %o`, json);
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+btnCreateService.onclick = async () => {
     const data = {name: 'Dad jokes', address: 'https://jokeservice69.herokuapp.com/', secret: 'daddy'};
     try {
         const service = await fetch('https://krdo-joke-registry.herokuapp.com/api/services', {
             method: "POST",
             body: JSON.stringify(data),
             headers: { 'Content-Type': 'application/json' }
-           // Origin: 'https://jokeservice69.herokuapp.com/'
         })
+        console.log(service);
     } catch (err) {
-        console.log(err.status);
+        console.log(err);
     }
 }

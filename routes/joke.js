@@ -75,6 +75,36 @@ router
             if (err.stack) console.error(err.stack);
             res.status(500).send(err);
         });
-    });
+    })
+    .delete('/services', (req, res) => {
+        const {address, secret} = req.body;
+        controller.deleteService(address, secret)
+        .then(result => res.json({message: 'Service deleted!', service: result}))
+        .catch(err => {
+            console.error("Error: " + err);
+            if (err.stack) console.error(err.stack);
+            res.status(500).send(err);
+        });
+    })
+    .delete('/othersite/jokes/:id', (req, res) => {
+        controller.deleteOtherSiteJoke(req.body.address, req.params.id)
+        .then(result => res.json({message: 'Joke deleted!', joke: result}))
+        .catch(err => {
+            console.error("Error: " + err);
+            if (err.stack) console.error(err.stack);
+            res.status(500).send(err);
+        });
+    })
+    .put('/othersite/jokes/:id', (req, res) => {
+        // Edit other joke
+        const {url, setup, punchline} = req.body;
+        controller.editOtherSiteJoke(url, req.params.id, setup, punchline)
+        .then(result => res.json({message: 'Joke edited!', joke: result}))
+            .catch(err => {
+                console.error("Error: " + err);
+                if (err.stack) console.error(err.stack);
+                res.status(500).send(err);
+            });
+    })
 
 module.exports = router;
