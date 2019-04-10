@@ -33,7 +33,7 @@ async function getJokes(id) {
     + '</span><img class="svg" alt="loading.gif" src="loading.svg">';
     try {
         const [template, response] = await Promise.all([fetch('/joke.hbs'), fetch('/api/otherjokes/' + id)]);
-        if (response.status >= 400) {
+        if (response.status >= 400 || !response) {
             throw new Error('No JSON to fetch');
         }
         const [templateText, jokes] = await Promise.all([template.text(), response.json()]);
@@ -81,7 +81,7 @@ async function getJokes(id) {
 async function getServices() {
     try {
         const [template, response] = await Promise.all([fetch('/service.hbs'), fetch('/api/othersites')]);
-        if (response.status >= 400) {
+        if (response.status >= 400 || !response) {
             throw new Error('Filed to fetch');
         }
     const [templateText, services] = await Promise.all([template.text(), response.json()]);
@@ -110,7 +110,7 @@ async function deleteJoke(id) {
             method: 'DELETE',
             headers: {'Content-Type': 'application/json'}
         })
-        if (response.status >= 400) {
+        if (response.status >= 400 || !response) {
             throw new Error('Failed to fetch');
         }
         const json = await response.json();
@@ -132,7 +132,7 @@ async function editJoke(id) {
                 body: JSON.stringify(msg),
                 headers: {'Content-Type': 'application/json'}
             })
-            if (response.status >= 400) {
+            if (response.status >= 400 || !response) {
                 throw new Error('Failed to fetch');
             }
             const json = await response.json();
@@ -156,7 +156,7 @@ btnPost.onclick = async () => {
                 body: JSON.stringify(msg),
                 headers: {'Content-Type': 'application/json'}
             })
-            if (response.status >= 400) {
+            if (response.status >= 400 || !response) {
                 throw new Error('Failed to fetch');
             }
             const json = await response.json();
@@ -177,7 +177,7 @@ btnDeleteService.onclick = async () => {
             body: JSON.stringify(data),
             headers: { 'Content-Type': 'application/json' }
         })
-        if (response.status >= 400) {
+        if (response.status >= 400 || !response) {
             throw new Error('Failed to fetch');
         }
         const json = await service.json();
@@ -195,7 +195,7 @@ btnCreateService.onclick = async () => {
             body: JSON.stringify(data),
             headers: { 'Content-Type': 'application/json' }
         })
-        if (response.status >= 400) {
+        if (response.status >= 400 || !response) {
             throw new Error('Failed to fetch');
         }
         console.log(service);
