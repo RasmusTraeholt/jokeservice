@@ -2,6 +2,7 @@ const jokeContainer = document.getElementById('jokes');
 const btnPost = document.getElementById('btnPost');
 const serviceContainer = document.getElementById('services');
 const newJokeContainer = document.getElementById('newJoke');
+const maxJokes = 50;
 
 update();
 
@@ -45,7 +46,10 @@ async function getJokes(id) {
 
         const compiledTemplate = Handlebars.compile(templateText);
 
+        console.log(jokes.length);
+
         let jokesHTML = '';
+
         jokes.forEach(joke => {
             jokesHTML += compiledTemplate({
                 id: joke._id,
