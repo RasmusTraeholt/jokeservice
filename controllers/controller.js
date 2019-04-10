@@ -35,20 +35,31 @@ exports.editJoke = function (id, setup, punchline) {
         { new: true }).exec();
 };
 
-exports.editOtherSiteJoke = async function(address, id, setup, punchline) {
-    const data = {setup: setup, punchline: punchline};
-    let url = address;
-    const regex = /\/$/;
-    if (!regex.test(url)) {
-        url += '/';
-    }
+exports.postJokeToSite = async function(id, setup, punchline) {
     try {
-        const response = await fetch(url + 'api/jokes/' + id, {
+        const data = {setup: setup, punchline: punchline};
+        const site = await exports.findService(id);
+        const response = await fetch(exports.checkUrl(site.address) + 'api/jokes/', {
+            method: "POST",
+            body: JSON.stringify(data),
+            headers: { 'Content-Type': 'application/json' }
+        })
+        return await response.json();
+    } catch (err) {
+        console.log(err);
+    }
+};
+
+exports.editOtherSiteJoke = async function(siteid, id, setup, punchline) {
+    try {
+        const data = {setup: setup, punchline: punchline};
+        const site = await exports.findService(siteid);
+        const response = await fetch(exports.checkUrl(site.address) + 'api/jokes/' + id, {
             method: "PUT",
             body: JSON.stringify(data),
             headers: { 'Content-Type': 'application/json' }
         })
-        return response;
+        return await response.json();
     } catch (err) {
         console.log(err);
     }
@@ -62,37 +73,29 @@ exports.getOthersites = async function () {
 
 exports.getOtherSiteJokes = async function (id) {
     const site = await exports.findService(id);
-    let url = site.address;
-
-    const regex = /\/$/;
-    if (!regex.test(url)) {
-        url += '/';
-    }
-    const response = await fetch(url + 'api/jokes');
+    const response = await fetch(exports.checkUrl(site.address) + 'api/jokes');
     const json = await response.json();
     return json;
 };
 
-exports.deleteOtherSiteJoke = async function(url, id) {
-    const regex = /\/$/;
-    if (!regex.test(url)) {
-        url += '/';
-    }
+exports.deleteOtherSiteJoke = async function(siteid, id) {
     try {
-        const response = await fetch(url + 'api/jokes/' + id, {
+        const site = await exports.findService(siteid);
+        const response = await fetch(exports.checkUrl(site.address) + 'api/jokes/' + id, {
             method: "DELETE",
             headers: { 'Content-Type': 'application/json' }
         })
-        return response;
+        return await response.json();
     } catch (err) {
         console.log(err);
     }
 }
 
 exports.findService = async function(id) {
-    const response = await fetch(RegistryURL + '/api/services');
-    const json = await response.json();
-    const site = json.find(site => site._id == id);
+    //const response = await fetch(RegistryURL + '/api/services');
+    //const json = await response.json();
+    const sites = await exports.getOthersites();
+    const site = sites.find(site => site._id == id);
     return site;
 };
 
@@ -105,4 +108,12 @@ exports.deleteService = async function (address, secret) {
     })
     const json = await response.json();
     return json;
+};
+
+exports.checkUrl = function(url) {
+    const regex = /\/$/;
+    if (!regex.test(url)) {
+        url += '/';
+    }
+    return url
 };

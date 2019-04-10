@@ -86,8 +86,9 @@ router
             res.status(500).send(err);
         });
     })
-    .delete('/othersite/jokes/:id', (req, res) => {
-        controller.deleteOtherSiteJoke(req.body.address, req.params.id)
+    .delete('/othersite/jokes/:siteid/:id', (req, res) => {
+        // Delete a joke from a site
+        controller.deleteOtherSiteJoke(req.params.siteid, req.params.id)
         .then(result => res.json({message: 'Joke deleted!', joke: result}))
         .catch(err => {
             console.error("Error: " + err);
@@ -95,10 +96,10 @@ router
             res.status(500).send(err);
         });
     })
-    .put('/othersite/jokes/:id', (req, res) => {
-        // Edit other joke
-        const {url, setup, punchline} = req.body;
-        controller.editOtherSiteJoke(url, req.params.id, setup, punchline)
+    .put('/othersite/jokes/:siteid/:id', (req, res) => {
+        // Edit a joke from a site
+        const {setup, punchline} = req.body;
+        controller.editOtherSiteJoke(req.params.siteid, req.params.id, setup, punchline)
         .then(result => res.json({message: 'Joke edited!', joke: result}))
             .catch(err => {
                 console.error("Error: " + err);
@@ -106,5 +107,16 @@ router
                 res.status(500).send(err);
             });
     })
+    .post('/othersite/jokes/:siteid', (req, res) => {
+        // Post a joke to a site
+        const {setup, punchline} = req.body;
+        controller.postJokeToSite(req.params.siteid, setup, punchline)
+        .then(result => res.json({message: 'Joke Posted!', joke: result}))
+            .catch(err => {
+                console.error("Error: " + err);
+                if (err.stack) console.error(err.stack);
+                res.status(500).send(err);
+            });
+    });
 
 module.exports = router;

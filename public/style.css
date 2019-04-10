@@ -16,3 +16,14 @@
 ol li {
     padding-bottom: 10px;
 }
+
+.svg {
+    display: block;
+    margin: 0 auto;
+}
+
+#statusText {
+    display: block;
+    margin: 0 auto;
+    text-align: center;
+}

@@ -19,79 +19,100 @@ async function update() {
 
 function updateJokes() {
     jokeContainer.innerHTML = '';
+    document.getElementById('postJokeContainer').style.display = 'none';
+    document.getElementById('serviceAddress').innerText = '';
     for (let input of document.querySelectorAll('input')) input.value = '';
-    if (serviceContainer.value != '0') {
+    if (serviceContainer.value != '0' && serviceContainer.value) {
         getJokes(serviceContainer.value);
     }
 }
 
 async function getJokes(id) {
-    jokeContainer.innerHTML = 'Loading...';
-    let template;
-    let response;
- 
-    if (!id || serviceContainer.options[serviceContainer.selectedIndex].id === 'https://jokeservice69.herokuapp.com/') {
-        response = await fetch('/api/jokes');
-        template = await fetch('/joke.hbs');
-    } else {
-        response = await fetch('/api/otherjokes/' + id);
-        template = await fetch('/joke.hbs');
-    }
-
-    console.log(response);
-
+    jokeContainer.innerHTML = '<span id="statusText">Loading latest 50 jokes from: '
+    +  serviceContainer.options[serviceContainer.selectedIndex].id
+    + '</span><img class="svg" alt="loading.gif" src="loading.svg">';
     try {
-        const templateText = await template.text();
-        const jokes = await response.json();
-
-        console.log(jokes);
-
+        const [template, response] = await Promise.all([fetch('/joke.hbs'), fetch('/api/otherjokes/' + id)]);
+        if (response.status >= 400) {
+            throw new Error('No JSON to fetch');
+        }
+        const [templateText, jokes] = await Promise.all([template.text(), response.json()]);
         const compiledTemplate = Handlebars.compile(templateText);
-
-        console.log(jokes.length);
 
         let jokesHTML = '';
 
-        jokes.forEach(joke => {
+        if (jokes.length > maxJokes) {
+            for (let i = jokes.length-1; i >= jokes.length-maxJokes; i--) {
+                jokesHTML += compiledTemplate({
+                    id: jokes[i]._id,
+                    setup: jokes[i].setup,
+                    punchline: jokes[i].punchline
+                });
+            };
+        } else {
+            for (let i = jokes.length-1; i >= 0; i--) {
+                jokesHTML += compiledTemplate({
+                    id: jokes[i]._id,
+                    setup: jokes[i].setup,
+                    punchline: jokes[i].punchline
+                });
+            }
+        }
+       
+        jokeContainer.innerHTML = jokesHTML;
+        document.getElementById('postJokeContainer').style.display = 'block';
+        document.getElementById('serviceAddress').innerText = serviceContainer.options[serviceContainer.selectedIndex].id;
+
+       /* jokes.forEach(joke => {
             jokesHTML += compiledTemplate({
                 id: joke._id,
                 setup: joke.setup,
                 punchline: joke.punchline,
             });
-        });
-        jokeContainer.innerHTML = jokesHTML;
+        });*/
     } catch (err) {
         console.log(err);
-        jokeContainer.innerHTML = 'Failed to fetch jokes from: <a href="' + serviceContainer.options[serviceContainer.selectedIndex].id + '">' + serviceContainer.options[serviceContainer.selectedIndex].id +'</a>';
+        jokeContainer.innerHTML = '<span id="statusText">Failed to fetch jokes from: <a href="' 
+        + serviceContainer.options[serviceContainer.selectedIndex].id + '">' 
+        + serviceContainer.options[serviceContainer.selectedIndex].id +'</a></span>';
     }
 }
 
 async function getServices() {
-    const [template, response] = await Promise.all([fetch('/service.hbs'), fetch('/api/othersites')]);
+    try {
+        const [template, response] = await Promise.all([fetch('/service.hbs'), fetch('/api/othersites')]);
+        if (response.status >= 400) {
+            throw new Error('Filed to fetch');
+        }
     const [templateText, services] = await Promise.all([template.text(), response.json()]);
-
+    const regex = /^(https:|http:|www\.)\S*/;
     const compiledTemplate = Handlebars.compile(templateText);
     let HTML = '<option value="0" disabled selected>Select a site</option>';
     services.forEach(service => {
-        HTML += compiledTemplate({
-            id: service._id,
-            name: service.name,
-            address: service.address,
-            secret: service.secret
-        });
+        if(regex.test(service.address)) {
+            HTML += compiledTemplate({
+                id: service._id,
+                name: service.name,
+                address: service.address,
+                secret: service.secret
+            });
+        }
     });
-    serviceContainer.innerHTML = HTML;
+        serviceContainer.innerHTML = HTML;
+    } catch (err) {
+        console.log(err);
+    }  
 }
 
 async function deleteJoke(id) {
-    let url = serviceContainer.options[serviceContainer.selectedIndex].id;
-    const data = {address: url, id: id};
     try {
-        const response = await fetch('/api/othersite/jokes/' + id, {
+        const response = await fetch('/api/othersite/jokes/' + serviceContainer.value + '/' + id, {
             method: 'DELETE',
-            body: JSON.stringify({address: url}),
             headers: {'Content-Type': 'application/json'}
         })
+        if (response.status >= 400) {
+            throw new Error('Failed to fetch');
+        }
         const json = await response.json();
         console.log(`Resultat: %o`, json);
         updateJokes();
@@ -101,64 +122,21 @@ async function deleteJoke(id) {
 }
 
 async function editJoke(id) {
-    const url = serviceContainer.options[serviceContainer.selectedIndex].id;
     const setup = document.getElementById('setup-' + id).innerText;
     const punchline = document.getElementById('punchline-' + id).innerText;
     if (setup.length > 0 && punchline.length > 0) {
-        const msg = {
-            url: url,
-            setup: setup,
-            punchline: punchline
-        };
-        if (url === 'https://jokeservice69.herokuapp.com/') {
-            try {
-                const response = await fetch('/api/jokes/' + id, {
-                    method: 'PUT',
-                    body: JSON.stringify(msg),
-                    headers: {'Content-Type': 'application/json'}
-                })
-                const json = await response.json();
-                console.log(`Resultat: %o`, json);
-                alert('Your joke has been saved');
-                updateJokes();
-            } catch (err) {
-                alert('Noget gik galt: ', err);
-                console.log(err);
-            }
-        } else {
-            try {
-                const response = await fetch('/api/othersite/jokes/' + id, {
-                    method: 'PUT',
-                    body: JSON.stringify(msg),
-                    headers: {'Content-Type': 'application/json'}
-                })
-                const json = await response.json();
-                console.log(`Resultat: %o`, json);
-                alert('Your joke has been saved');
-                updateJokes();
-            } catch (err) {
-                alert('Noget gik galt: ', err);
-                console.log(err);
-            }
-        }
-    }
-}
-
-async function editOtherJoke(id) {
-    const url = serviceContainer.options[serviceContainer.selectedIndex].id;
-    const setup = document.getElementById('setup-' + id).innerText;
-    const punchline = document.getElementById('punchline-' + id).innerText;
-    if (setup.length > 0 && punchline.length > 0) {
-        const msg = {url: url, setup: setup, punchline: punchline};
+        const msg = {setup: setup, punchline: punchline};
         try {
-            const response = await fetch('/api/othersite/jokes/' + id, {
+            const response = await fetch('/api/othersite/jokes/' + serviceContainer.value + '/' + id, {
                 method: 'PUT',
                 body: JSON.stringify(msg),
                 headers: {'Content-Type': 'application/json'}
             })
+            if (response.status >= 400) {
+                throw new Error('Failed to fetch');
+            }
             const json = await response.json();
             console.log(`Resultat: %o`, json);
-            alert('Your joke has been saved');
             updateJokes();
         } catch (err) {
             alert('Noget gik galt: ', err);
@@ -171,21 +149,21 @@ btnPost.onclick = async () => {
     let setup = document.getElementById('setup').value;
     let punchline = document.getElementById('punchline').value
     if (setup.length > 0 && punchline.length > 0) {
-        const msg = {
-            setup: setup,
-            punchline: punchline,
-        };
+        const msg = {setup: setup, punchline: punchline};
         try {
-            const response = await fetch('/api/jokes', {
+            const response = await fetch('/api/othersite/jokes/' + serviceContainer.value, {
                 method: "POST",
                 body: JSON.stringify(msg),
                 headers: {'Content-Type': 'application/json'}
             })
+            if (response.status >= 400) {
+                throw new Error('Failed to fetch');
+            }
             const json = await response.json();
             console.log(`Resultat: %o`, json);
-            alert('Your new joke has been saved');
             updateJokes();
         } catch (err) {
+            alert('Noget gik galt: ', err);
             console.log(err);
         }
     }
@@ -199,7 +177,9 @@ btnDeleteService.onclick = async () => {
             body: JSON.stringify(data),
             headers: { 'Content-Type': 'application/json' }
         })
-
+        if (response.status >= 400) {
+            throw new Error('Failed to fetch');
+        }
         const json = await service.json();
         console.log(`Resultat: %o`, json);
     } catch (err) {
@@ -215,6 +195,9 @@ btnCreateService.onclick = async () => {
             body: JSON.stringify(data),
             headers: { 'Content-Type': 'application/json' }
         })
+        if (response.status >= 400) {
+            throw new Error('Failed to fetch');
+        }
         console.log(service);
     } catch (err) {
         console.log(err);
