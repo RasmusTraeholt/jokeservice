@@ -1,11 +1,17 @@
+body {
+    font-family: sans-serif;
+    font-size: 1em;
+}
+
 .container {
-    width: 100%;
+    max-width: 1250px;
     margin: 0 auto;
 }
 
 .row {
     display: flex;
-    flex-flow: row wrap
+    flex-flow: row wrap;
+    margin-bottom: 10px;
 }
 
 .col {
@@ -15,6 +21,7 @@
 
 ol li {
     padding-bottom: 10px;
+    border-bottom: 1px solid #eeeeee;
 }
 
 .svg {
