@@ -92,8 +92,6 @@ exports.deleteOtherSiteJoke = async function(siteid, id) {
 }
 
 exports.findService = async function(id) {
-    //const response = await fetch(RegistryURL + '/api/services');
-    //const json = await response.json();
     const sites = await exports.getOthersites();
     const site = sites.find(site => site._id == id);
     return site;
