@@ -28,7 +28,7 @@ exports.deleteJoke = function (id) {
     return Joke.findOneAndDelete({ _id: id }).exec();
 };
 
-// Function to edit Jokes with new setup and punchline through specific id
+// Function to edit a Joke with new setup and punchline through specific id
 exports.editJoke = function (id, setup, punchline) {
     return Joke.findOneAndUpdate(
         { _id: id },
@@ -36,7 +36,7 @@ exports.editJoke = function (id, setup, punchline) {
         { new: true }).exec();
 };
 
-// Function to post a joke to own Site, and hopefully returns a json with the deleted joke.
+// Function to post new joke to selected Site. expexted return: json with the deleted joke.
 exports.postJokeToSite = async function(id, setup, punchline) {
     try {
         const data = {setup: setup, punchline: punchline};
@@ -52,7 +52,7 @@ exports.postJokeToSite = async function(id, setup, punchline) {
     }
 };
 
-// Function to post a joke to another Site, and hopefully returns a json with the new response.
+// Function to post a joke to another Site. Expected return: json with the updated joke.
 exports.editOtherSiteJoke = async function(siteid, id, setup, punchline) {
     try {
         const data = {setup: setup, punchline: punchline};
@@ -68,7 +68,7 @@ exports.editOtherSiteJoke = async function(siteid, id, setup, punchline) {
     }
 }
 
-// Returns JSON with all registered services
+// Returns JSON with all registered services from RegistryURL
 exports.getOthersites = async function () {
     const response = await fetch(RegistryURL + '/api/services');
     const json = await response.json();
@@ -83,7 +83,7 @@ exports.getOtherSiteJokes = async function (id) {
     return json;
 };
 
-// delete jokes from other sites and hopefully returns json with the deleted joke
+// delete a joke from selected site. Expected return: json with the deleted joke
 exports.deleteOtherSiteJoke = async function(siteid, id) {
     try {
         const site = await exports.findService(siteid);

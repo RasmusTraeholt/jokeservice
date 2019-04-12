@@ -8,8 +8,6 @@ const maxJokes = 50;
 
 update();
 
-//createService();
-
 // makes the setup of the html site and calls getServices()
 async function update() {
     jokeContainer.innerHTML = '';
@@ -18,7 +16,7 @@ async function update() {
     getServices();
 }
 
-// 
+// Updates the HTML when selecting another service in the dropdown
 function updateJokes() {
     jokeContainer.innerHTML = '';
     document.getElementById('postJokeContainer').style.display = 'none';
@@ -29,7 +27,7 @@ function updateJokes() {
     }
 }
 
-// gets all jokes from a service through it's id, and puts the 50 latest jokes into the html containter with id jokes
+// gets all jokes from a service through it's id, and puts the 50 latest jokes into the html containter through a handlebars template
 async function getJokes(id) {
     jokeContainer.innerHTML = '<span id="statusText">Loading latest 50 jokes from: '
     +  serviceContainer.options[serviceContainer.selectedIndex].id
@@ -81,7 +79,7 @@ async function getJokes(id) {
     }
 }
 
-// gets all services and puts them into the html element with id services
+// gets all services and puts them into the html element with id services through a handlebars template
 async function getServices() {
     try {
         const [template, response] = await Promise.all([fetch('/service.hbs'), fetch('/api/othersites')]);
@@ -108,7 +106,7 @@ async function getServices() {
     }  
 }
 
-// delete joke with id from a specific service
+// delete joke with id from selected service
 async function deleteJoke(id) {
     try {
         const response = await fetch('/api/othersite/jokes/' + serviceContainer.value + '/' + id, {
@@ -151,7 +149,7 @@ async function editJoke(id) {
     }
 }
 
-// when the btnPost button element is clicked a new post is posted to the service and the jokes are being updated
+// when the btnPost button element is clicked a new joke is posted to the currently selected service and the jokes are being updated
 btnPost.onclick = async () => {
     let setup = document.getElementById('setup').value;
     let punchline = document.getElementById('punchline').value
@@ -176,7 +174,7 @@ btnPost.onclick = async () => {
     }
 }
 
-// when the btnDeleteService button element is clicked our service is deleted from the jokeservice69
+// when the btnDeleteService button element is clicked our service is deleted from the registry
 btnDeleteService.onclick = async () => {
     const data = {address: 'https://jokeservice69.herokuapp.com/', secret: 'daddy'};
     try {
@@ -195,7 +193,7 @@ btnDeleteService.onclick = async () => {
     }
 }
 
-// when the btnDeleteService button element is clicked our service is created on the jokeservice69
+// when the btnCreateService button element is clicked our service is posted to the registry
 btnCreateService.onclick = async () => {
     const data = {name: 'Dad jokes', address: 'https://jokeservice69.herokuapp.com/', secret: 'daddy'};
     try {
